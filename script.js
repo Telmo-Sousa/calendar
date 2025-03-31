@@ -166,6 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
     } catch (error) {
       resultDiv.innerHTML = `<p style='color: red;'>Error: ${error.message}</p>`;
+      console.error(error); // Add console logging for debugging because this project decides not to work on months after the current month
     }
   }
 
@@ -470,7 +471,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const shift = shiftTimes[shiftCode];
       const [year, month, day] = dateStr.split("-").map(Number);
-      const date = new Date(year, month - 1, day);
+      
+      // Create date objects correctly
+      const date = new Date(Date.UTC(year, month - 1, day));
       const dateString = formatDate(date);
 
       icsContent.push("BEGIN:VEVENT");
@@ -479,23 +482,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (shiftCode === "folga" || shiftCode === "ferias") {
         icsContent.push(`DTSTART;VALUE=DATE:${dateString}`);
-        icsContent.push(
-          `DTEND;VALUE=DATE:${formatDate(new Date(year, month - 1, day + 1))}`
-        );
+        
+        // Create a new date for the end date (next day)
+        const nextDay = new Date(Date.UTC(year, month - 1, day));
+        nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+        
+        icsContent.push(`DTEND;VALUE=DATE:${formatDate(nextDay)}`);
         icsContent.push(`SUMMARY:${shift.name}`);
       } else {
-        const startDateTime = new Date(
+        // Create proper UTC dates for start and end times
+        // I don't know why this seems to have fixed the issue, but it did
+        const startParts = shift.start.split(":");
+        const endParts = shift.end.split(":");
+        
+        const startDateTime = new Date(Date.UTC(
+          year, 
+          month - 1,
+          day,
+          parseInt(startParts[0]),
+          parseInt(startParts[1])
+        ));
+        
+        const endDateTime = new Date(Date.UTC(
           year,
           month - 1,
           day,
-          ...shift.start.split(":").map(Number)
-        );
-        const endDateTime = new Date(
-          year,
-          month - 1,
-          day,
-          ...shift.end.split(":").map(Number)
-        );
+          parseInt(endParts[0]),
+          parseInt(endParts[1])
+        ));
 
         icsContent.push(`DTSTART:${formatDateTime(startDateTime)}`);
         icsContent.push(`DTEND:${formatDateTime(endDateTime)}`);
@@ -527,7 +541,9 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!shiftCode) continue;
 
       const shift = shiftTimes[shiftCode];
-      const date = new Date(year, month, day);
+      
+      // Use UTC dates to avoid timezone issues
+      const date = new Date(Date.UTC(year, month, day));
       const dateString = formatDate(date);
 
       icsContent.push("BEGIN:VEVENT");
@@ -536,23 +552,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (shiftCode === "folga" || shiftCode === "ferias") {
         icsContent.push(`DTSTART;VALUE=DATE:${dateString}`);
-        icsContent.push(
-          `DTEND;VALUE=DATE:${formatDate(new Date(year, month, day + 1))}`
-        );
+        
+        // Create a new UTC date for the end date (next day)
+        const nextDay = new Date(Date.UTC(year, month, day));
+        nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+        
+        icsContent.push(`DTEND;VALUE=DATE:${formatDate(nextDay)}`);
         icsContent.push(`SUMMARY:${shift.name}`);
       } else {
-        const startDateTime = new Date(
+        // Create proper UTC dates for start and end times
+        const startParts = shift.start.split(":");
+        const endParts = shift.end.split(":");
+        
+        const startDateTime = new Date(Date.UTC(
+          year, 
+          month,
+          day,
+          parseInt(startParts[0]),
+          parseInt(startParts[1])
+        ));
+        
+        const endDateTime = new Date(Date.UTC(
           year,
           month,
           day,
-          ...shift.start.split(":").map(Number)
-        );
-        const endDateTime = new Date(
-          year,
-          month,
-          day,
-          ...shift.end.split(":").map(Number)
-        );
+          parseInt(endParts[0]),
+          parseInt(endParts[1])
+        ));
 
         icsContent.push(`DTSTART:${formatDateTime(startDateTime)}`);
         icsContent.push(`DTEND:${formatDateTime(endDateTime)}`);
