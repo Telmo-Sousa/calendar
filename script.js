@@ -169,9 +169,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  const csvFileInput = document.getElementById("csv-file");
+
   document
     .getElementById("generate-from-csv")
     .addEventListener("click", generateFromCSV);
+
+  csvFileInput.addEventListener("change", handleCSVFileUpload);
+
+  function handleCSVFileUpload(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const csvData = e.target.result;
+        document.getElementById("csv-data").value = csvData; // Populate textarea
+      };
+
+      reader.onerror = function () {
+        alert("Error reading the CSV file.");
+      };
+
+      reader.readAsText(file);
+    }
+  }
 
   function generateFromCSV() {
     const csvData = document.getElementById("csv-data").value;
@@ -180,7 +203,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const resultDiv = document.getElementById("csv-result");
 
     if (!csvData) {
-      resultDiv.innerHTML = "<p style='color: red;'>Please paste CSV data</p>";
+      resultDiv.innerHTML =
+        "<p style='color: red;'>Please paste CSV data or upload a CSV file</p>";
       return;
     }
 
