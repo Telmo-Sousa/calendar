@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const shiftTimes = {
-    1: { start: "09:45", end: "19:00", name: "Morning Shift" },
+    1: { start: "10:00", end: "19:00", name: "Morning Shift" },
     2: { start: "14:00", end: "23:00", name: "Afternoon Shift" },
     5: { start: "11:30", end: "20:30", name: "Mid Shift" },
     folga: { name: "Day Off" },
@@ -307,12 +307,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     }
-    if (Object.keys(schedule).length > 0) {
-      const sortedDates = Object.keys(schedule).sort();
-      if (sortedDates.length > 0) {
-        delete schedule[sortedDates[0]];
-      }
-    }
     return schedule;
   }
   function generateSchedulePreview(schedule) {
@@ -345,13 +339,13 @@ document.addEventListener("DOMContentLoaded", function () {
       let shiftDescription;
       switch (shiftCode) {
         case "1":
-          shiftDescription = "Morning Shift (09:45 - 19:00)";
+          shiftDescription = "Morning Shift";
           break;
         case "2":
-          shiftDescription = "Afternoon Shift (14:00 - 23:00)";
+          shiftDescription = "Afternoon Shift";
           break;
         case "5":
-          shiftDescription = "Mid Shift (11:30 - 20:30)";
+          shiftDescription = "Mid Shift";
           break;
         case "folga":
           shiftDescription = "Day Off";
@@ -463,92 +457,75 @@ document.addEventListener("DOMContentLoaded", function () {
     return icsContent.join("\r\n");
   }
 
-  function generateICS(schedule, year, month, shiftTimes) {
-    let icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Work Schedule Calendar Generator//EN",
-      "CALSCALE:GREGORIAN",
-      "METHOD:PUBLISH",
-      "BEGIN:VTIMEZONE",
-      "TZID:Europe/Lisbon",
-      "TZURL:http://tzurl.org/zoneinfo-outlook/Europe/Lisbon",
-      "X-LIC-LOCATION:Europe/Lisbon",
-      "BEGIN:STANDARD",
-      "TZNAME:WET",
-      "DTSTART:19701025T020000",
-      "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
-      "TZOFFSETFROM:+0100",
-      "TZOFFSETTO:+0000",
-      "END:STANDARD",
-      "BEGIN:DAYLIGHT",
-      "TZNAME:WEST",
-      "DTSTART:19700329T010000",
-      "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU",
-      "TZOFFSETFROM:+0000",
-      "TZOFFSETTO:+0100",
-      "END:DAYLIGHT",
-      "END:VTIMEZONE",
-    ];
-    
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-      const shiftCode = schedule[day];
-      if (!shiftCode) continue;
-      const shift = shiftTimes[shiftCode];
-      
-      // Use local dates instead of UTC
-      const date = new Date(year, month, day);
-      const dateString = formatDate(date);
-      
-      icsContent.push("BEGIN:VEVENT");
-      icsContent.push(`UID:${dateString}-${shiftCode}@workschedule`);
-      icsContent.push(`DTSTAMP:${formatDateTime(new Date())}`);
-      
-      if (shiftCode === "folga" || shiftCode === "ferias") {
-        // For all-day events, use VALUE=DATE format
-        icsContent.push(`DTSTART;VALUE=DATE:${dateString}`);
-        
-        // Create a new date for the end date (next day)
-        const nextDay = new Date(year, month, day);
-        nextDay.setDate(nextDay.getDate() + 1);
-        
-        icsContent.push(`DTEND;VALUE=DATE:${formatDate(nextDay)}`);
-        icsContent.push(`SUMMARY:${shift.name}`);
-      } else {
-        // For timed events, include timezone info
-        const startParts = shift.start.split(":");
-        const endParts = shift.end.split(":");
-        
-        const startDateTime = new Date(
-          year, 
-          month,
-          day,
-          parseInt(startParts[0]),
-          parseInt(startParts[1])
-        );
-        
-        const endDateTime = new Date(
-          year,
-          month,
-          day,
-          parseInt(endParts[0]),
-          parseInt(endParts[1])
-        );
-        
-        // Add TZID parameters to specify Portugal timezone
-        icsContent.push(`DTSTART;TZID=Europe/Lisbon:${formatLocalDateTime(startDateTime)}`);
-        icsContent.push(`DTEND;TZID=Europe/Lisbon:${formatLocalDateTime(endDateTime)}`);
-        icsContent.push(`SUMMARY:${shift.name} (${shift.start} - ${shift.end})`);
-      }
-      
-      icsContent.push("END:VEVENT");
+function generateICS(schedule, shiftTimes) {
+  let icsContent = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Work Schedule Calendar Generator//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+  ];
+
+  for (const dateStr in schedule) {
+    const shiftCode = schedule[dateStr];
+    if (!shiftCode) continue;
+
+    const shift = shiftTimes[shiftCode];
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+
+    icsContent.push("BEGIN:VEVENT");
+    icsContent.push(`UID:${dateStr}-${shiftCode}@workschedule`);
+    icsContent.push(`DTSTAMP:${formatDateTime(new Date())}`);
+
+    if (shiftCode === "folga" || shiftCode === "ferias") {
+      // All-day event
+      icsContent.push(`DTSTART;VALUE=DATE:${formatDate(date)}`);
+      const nextDay = new Date(date);
+      nextDay.setDate(nextDay.getDate() + 1);
+      icsContent.push(`DTEND;VALUE=DATE:${formatDate(nextDay)}`);
+      icsContent.push(`SUMMARY:${shift.name}`);
+    } else {
+      // Timed event (local time)
+      const [startHour, startMin] = shift.start.split(":").map(Number);
+      const [endHour, endMin] = shift.end.split(":").map(Number);
+      const startDateTime = new Date(year, month - 1, day, startHour, startMin);
+      const endDateTime = new Date(year, month - 1, day, endHour, endMin);
+
+      icsContent.push(`DTSTART:${formatLocalDateTime(startDateTime)}`);
+      icsContent.push(`DTEND:${formatLocalDateTime(endDateTime)}`);
+      icsContent.push(`SUMMARY:${shift.name} (${shift.start} - ${shift.end})`);
     }
-    
-    icsContent.push("END:VCALENDAR");
-    return icsContent.join("\r\n");
+
+    icsContent.push("END:VEVENT");
   }
+
+  icsContent.push("END:VCALENDAR");
+  return icsContent.join("\r\n");
+}
+
+// Helpers
+function formatDate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}${m}${d}`;
+}
+
+function formatDateTime(date) {
+  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+}
+
+function formatLocalDateTime(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const h = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
+  const s = String(date.getSeconds()).padStart(2, "0");
+  return `${y}${m}${d}T${h}${min}${s}`;
+}
+
 
   // Format date as YYYYMMDD for all-day events
   function formatDate(date) {
