@@ -1,0 +1,1139 @@
+:root,
+[data-theme="dark"] {
+  --paper: #12161D;
+  --panel: #1A2029;
+  --ink: #E9E7DF;
+  --ink-soft: #98A2B3;
+  --line: #2B3340;
+
+  --teal: #5FC2B3;
+  --teal-soft: rgba(95, 194, 179, 0.14);
+
+  --amber: #E5A85C;
+  --amber-soft: rgba(229, 168, 92, 0.14);
+
+  --coral: #E28A76;
+  --coral-soft: rgba(226, 138, 118, 0.14);
+
+  --grid-off: #212836;
+
+  --radius: 10px;
+
+  --shadow:
+    0 1px 2px rgba(0,0,0,0.25),
+    0 8px 22px rgba(0,0,0,0.28);
+
+  --hairline: rgba(233,231,223,0.05);
+}
+
+
+[data-theme="light"] {
+  --paper: #F5F3ED;
+  --panel: #FFFFFF;
+  --ink: #16233B;
+  --ink-soft: #4A5A72;
+  --line: #DCD6C8;
+
+  --teal: #256B63;
+  --teal-soft: #DCEAE6;
+
+  --amber: #C8792B;
+  --amber-soft: #F3E4CE;
+
+  --coral: #B24B3C;
+  --coral-soft: #F1DCD5;
+
+  --grid-off: #EFECE2;
+
+  --shadow:
+    0 1px 2px rgba(22,35,59,0.06),
+    0 4px 14px rgba(22,35,59,0.05);
+
+  --hairline: rgba(22,35,59,0.035);
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  line-height: 1.5;
+  padding-bottom: 60px;
+
+  transition:
+    background .15s ease,
+    color .15s ease;
+}
+
+
+.mono {
+  font-family:
+    "IBM Plex Mono",
+    "SFMono-Regular",
+    Consolas,
+    monospace;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+header.top {
+  padding: 34px 24px 22px;
+  border-bottom: 1px solid var(--line);
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--hairline) 0,
+      var(--hairline) 1px,
+      transparent 1px,
+      transparent 84px
+    );
+}
+
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+
+.brand-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+
+button.theme-toggle {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+
+  flex: 0 0 auto;
+
+  background: var(--panel);
+  color: var(--ink-soft);
+
+  border: 1px solid var(--line);
+  border-radius: 20px;
+
+  padding: 6px 13px;
+
+  cursor: pointer;
+}
+
+
+button.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--teal);
+}
+
+
+.brand .mark {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: .14em;
+
+  background: var(--teal);
+  color: #fff;
+
+  padding: 5px 9px;
+  border-radius: 6px;
+}
+
+
+h1 {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 26px;
+
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+
+.tag {
+  color: var(--ink-soft);
+  font-size: 14.5px;
+
+  max-width: 920px;
+  margin: 8px auto 0;
+}
+
+
+/* ============================================================
+   MAIN / TABS
+   ============================================================ */
+
+main {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+
+nav.tabs {
+  display: flex;
+  gap: 2px;
+
+  margin: 26px 0 0;
+
+  border-bottom: 1px solid var(--line);
+}
+
+
+nav.tabs button {
+  font-family: "Space Grotesk", sans-serif;
+
+  appearance: none;
+  border: none;
+  background: none;
+
+  cursor: pointer;
+
+  padding: 12px 18px 13px;
+
+  font-size: 14.5px;
+  font-weight: 600;
+
+  color: var(--ink-soft);
+
+  border-bottom: 2px solid transparent;
+
+  margin-bottom: -1px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+nav.tabs button .num {
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  color: var(--ink-soft);
+
+  border: 1px solid var(--line);
+  border-radius: 4px;
+
+  padding: 1px 5px;
+}
+
+
+nav.tabs button.active {
+  color: var(--ink);
+  border-bottom-color: var(--teal);
+}
+
+
+nav.tabs button.active .num {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+
+
+nav.tabs button:hover {
+  color: var(--ink);
+}
+
+
+section.panel {
+  display: none;
+  padding: 26px 0 10px;
+}
+
+
+section.panel.active {
+  display: block;
+}
+
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.card {
+  background: var(--panel);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  padding: 20px 22px;
+  margin-bottom: 18px;
+
+  box-shadow: var(--shadow);
+}
+
+
+.card h2 {
+  font-family: "Space Grotesk", sans-serif;
+
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+
+
+.card p.hint {
+  color: var(--ink-soft);
+
+  font-size: 13.5px;
+
+  margin: 0 0 14px;
+}
+
+
+label.field-label {
+  display: block;
+
+  font-size: 12.5px;
+  font-weight: 600;
+
+  color: var(--ink-soft);
+
+  margin-bottom: 5px;
+
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+
+select,
+input[type="text"],
+input[type="time"],
+input[type="number"],
+textarea {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+
+  color: var(--ink);
+
+  border: 1px solid var(--line);
+  border-radius: 7px;
+
+  padding: 8px 10px;
+
+  background: var(--panel);
+
+  width: 100%;
+}
+
+
+textarea {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+
+  resize: vertical;
+  min-height: 140px;
+}
+
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+
+/* ============================================================
+   ROWS
+   ============================================================ */
+
+.row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+
+.row > div {
+  flex: 1;
+  min-width: 140px;
+}
+
+
+.build-button {
+  flex: 0 0 auto !important;
+  align-self: flex-end;
+}
+
+
+.sheet-picker-wrap {
+  flex: 0 0 auto !important;
+}
+
+
+.csv-name-row,
+.sheet-row,
+.preview-wrap,
+.xlsx-toolbar {
+  display: none;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+button.btn {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+
+  border: none;
+  border-radius: 7px;
+
+  padding: 10px 16px;
+
+  cursor: pointer;
+
+  background: var(--teal);
+  color: #fff;
+}
+
+
+button.btn:hover {
+  background: #1d554e;
+}
+
+
+button.btn.secondary {
+  background: var(--panel);
+  color: var(--ink);
+
+  border: 1px solid var(--line);
+}
+
+
+button.btn.secondary:hover {
+  background: var(--grid-off);
+}
+
+
+button.btn.ghost {
+  background: none;
+  color: var(--teal);
+
+  padding: 8px 4px;
+}
+
+
+button.btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================
+   ADD CODE
+   ============================================================ */
+
+.add-code-row {
+  margin-top: 10px;
+}
+
+
+/* ============================================================
+   SHIFT CODE TABLE
+   ============================================================ */
+
+.codes-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+
+table.codes {
+  width: 100%;
+  border-collapse: collapse;
+
+  font-size: 13.5px;
+}
+
+
+table.codes th {
+  text-align: left;
+
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+
+  color: var(--ink-soft);
+  font-weight: 600;
+
+  padding: 0 8px 8px;
+
+  border-bottom: 1px solid var(--line);
+}
+
+
+table.codes td {
+  padding: 7px 8px;
+
+  border-bottom: 1px solid var(--grid-off);
+
+  vertical-align: middle;
+}
+
+
+table.codes input {
+  padding: 5px 7px;
+  font-size: 13px;
+}
+
+
+table.codes tr:last-child td {
+  border-bottom: none;
+}
+
+
+.remove-column {
+  width: 80px !important;
+}
+
+
+/* ============================================================
+   REMOVE BUTTON
+   ============================================================ */
+
+.remove-btn {
+  background: none !important;
+
+  color: var(--coral) !important;
+
+  border: 1px solid transparent !important;
+
+  padding: 7px 10px !important;
+
+  font-size: 12px !important;
+
+  white-space: nowrap;
+
+  min-height: 34px;
+
+  width: auto;
+}
+
+
+.remove-btn:hover {
+  background: var(--coral-soft) !important;
+
+  border-color: var(--coral) !important;
+}
+
+
+/* ============================================================
+   CALENDAR GRID
+   ============================================================ */
+
+.cal-grid {
+  display: grid;
+
+  grid-template-columns: repeat(7, 1fr);
+
+  gap: 6px;
+
+  margin-top: 14px;
+}
+
+
+.cal-dow {
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 10.5px;
+
+  color: var(--ink-soft);
+
+  text-align: center;
+
+  text-transform: uppercase;
+
+  padding-bottom: 4px;
+}
+
+
+.cal-cell {
+  border: 1px solid var(--line);
+
+  border-radius: 7px;
+
+  padding: 6px 6px 8px;
+
+  background: var(--panel);
+
+  min-height: 70px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.cal-cell.empty {
+  background: transparent;
+  border: none;
+}
+
+
+.cal-cell .daynum {
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 12px;
+
+  color: var(--ink-soft);
+}
+
+
+.cal-cell select {
+  font-size: 11.5px;
+  padding: 4px;
+}
+
+
+/* ============================================================
+   TOOLBAR
+   ============================================================ */
+
+.toolbar {
+  display: flex;
+
+  gap: 10px;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  margin-top: 14px;
+}
+
+
+/* ============================================================
+   PREVIEW
+   ============================================================ */
+
+table.preview {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  font-size: 12.5px;
+}
+
+
+table.preview th {
+  text-align: left;
+
+  background: var(--grid-off);
+
+  padding: 6px 8px;
+
+  font-weight: 600;
+
+  position: sticky;
+  top: 0;
+
+  white-space: nowrap;
+}
+
+
+table.preview td {
+  padding: 6px 8px;
+
+  border-bottom: 1px solid var(--grid-off);
+
+  white-space: nowrap;
+}
+
+
+.preview-wrap {
+  max-height: 320px;
+
+  overflow: auto;
+
+  -webkit-overflow-scrolling: touch;
+
+  border: 1px solid var(--line);
+
+  border-radius: 8px;
+
+  margin-top: 12px;
+}
+
+
+.preview-wrap table {
+  min-width: 520px;
+}
+
+
+/* ============================================================
+   PILLS
+   ============================================================ */
+
+.pill {
+  font-family: "IBM Plex Mono", monospace;
+
+  font-size: 10.5px;
+
+  padding: 2px 7px;
+
+  border-radius: 20px;
+
+  display: inline-block;
+}
+
+
+.pill.work {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+
+.pill.off {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+
+.pill.vacation {
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+
+
+.pill.unknown {
+  background: var(--grid-off);
+  color: var(--ink-soft);
+}
+
+
+/* ============================================================
+   DROP AREA
+   ============================================================ */
+
+.drop {
+  border: 1.5px dashed var(--line);
+
+  border-radius: 9px;
+
+  padding: 26px 16px;
+
+  text-align: center;
+
+  color: var(--ink-soft);
+
+  font-size: 13.5px;
+
+  cursor: pointer;
+
+  background: var(--paper);
+}
+
+
+.drop.dragover {
+  border-color: var(--teal);
+
+  background: var(--teal-soft);
+
+  color: var(--teal);
+}
+
+
+.drop strong {
+  color: var(--ink);
+}
+
+
+.paste-label {
+  margin-top: 14px;
+}
+
+
+/* ============================================================
+   STATUS / NOTE
+   ============================================================ */
+
+.status {
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+
+.status.ok {
+  color: var(--teal);
+}
+
+
+.status.err {
+  color: var(--coral);
+}
+
+
+.note {
+  font-size: 12.5px;
+
+  color: var(--ink-soft);
+
+  background: var(--grid-off);
+
+  border-radius: 7px;
+
+  padding: 9px 11px;
+
+  margin-top: 12px;
+}
+
+
+code {
+  font-family: "IBM Plex Mono", monospace;
+
+  background: var(--grid-off);
+
+  padding: 1px 5px;
+
+  border-radius: 4px;
+
+  font-size: 12px;
+}
+
+
+select#sheetPicker {
+  width: auto;
+  display: inline-block;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer {
+  max-width: 920px;
+
+  margin: 30px auto 0;
+
+  padding: 0 24px;
+
+  color: var(--ink-soft);
+
+  font-size: 12px;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+  header.top {
+    padding: 20px 16px 16px;
+  }
+
+
+  h1 {
+    font-size: 20px;
+  }
+
+
+  .tag {
+    font-size: 13px;
+  }
+
+
+  button.theme-toggle {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+
+  main {
+    padding: 0 14px;
+  }
+
+
+  .card {
+    padding: 15px 14px;
+  }
+
+
+  nav.tabs {
+    margin-top: 18px;
+
+    gap: 0;
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+  }
+
+
+  nav.tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+
+  nav.tabs button {
+    white-space: nowrap;
+
+    padding: 10px 12px 12px;
+
+    font-size: 13px;
+
+    flex: 0 0 auto;
+  }
+
+
+  /* Prevent iOS zoom */
+  select,
+  input[type="text"],
+  input[type="time"],
+  input[type="number"],
+  textarea {
+    font-size: 16px;
+  }
+
+
+  table.codes input {
+    font-size: 14px;
+  }
+
+
+  .row {
+    gap: 10px;
+  }
+
+
+  .row > div {
+    min-width: 100%;
+  }
+
+
+  .build-button {
+    min-width: 100% !important;
+  }
+
+
+  .build-button button {
+    width: 100%;
+  }
+
+
+  .toolbar {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+
+  .toolbar button.btn {
+    width: 100%;
+  }
+
+
+  button.btn {
+    padding: 12px 16px;
+
+    font-size: 15px;
+  }
+
+
+  /* ==========================================================
+     MOBILE SHIFT TABLE
+     ========================================================== */
+
+  table.codes thead {
+    display: none;
+  }
+
+
+  table.codes,
+  table.codes tbody,
+  table.codes tr,
+  table.codes td {
+    display: block;
+
+    width: 100%;
+  }
+
+
+  table.codes tr {
+    border: 1px solid var(--line);
+
+    border-radius: 9px;
+
+    padding: 10px 12px;
+
+    margin-bottom: 10px;
+
+    background: var(--panel);
+  }
+
+
+  table.codes td {
+    border-bottom: none;
+
+    padding: 6px 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+  }
+
+
+  table.codes td::before {
+    content: attr(data-label);
+
+    flex: 0 0 78px;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+
+    color: var(--ink-soft);
+
+    font-weight: 600;
+  }
+
+
+  table.codes td > input {
+    flex: 1;
+
+    min-width: 0;
+
+    width: auto !important;
+  }
+
+
+  /* Remove is just another row item */
+  table.codes td:last-child {
+    justify-content: flex-end;
+
+    padding-top: 10px;
+
+    margin-top: 4px;
+
+    border-top: 1px solid var(--grid-off);
+  }
+
+
+  table.codes td:last-child::before {
+    content: none;
+  }
+
+
+  .remove-btn {
+    min-height: 40px;
+
+    width: 100% !important;
+  }
+
+
+  .cal-grid {
+    gap: 4px;
+  }
+
+
+  .cal-cell {
+    min-height: 54px;
+
+    padding: 4px 3px;
+
+    border-radius: 6px;
+  }
+
+
+  .cal-cell .daynum {
+    font-size: 10.5px;
+  }
+
+
+  .cal-cell select {
+    font-size: 10px;
+
+    padding: 3px 2px;
+
+    text-overflow: ellipsis;
+  }
+
+
+  .drop {
+    padding: 20px 12px;
+
+    font-size: 13px;
+  }
+
+
+  .note {
+    font-size: 12px;
+  }
+
+
+  footer {
+    padding: 0 14px;
+  }
+}
+
+
+@media (max-width: 400px) {
+
+  .cal-grid {
+    gap: 3px;
+  }
+
+
+  .cal-cell {
+    min-height: 46px;
+  }
+
+
+  nav.tabs button .num {
+    display: none;
+  }
+}

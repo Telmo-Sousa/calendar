@@ -1,134 +1,319 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calendar Generator</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horário → Calendário</title>
 
-    <div class="container">
-      <h1>Work Schedule Calendar Generator</h1>
-      
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="manual">Manual Entry</button>
-        <button class="tab-btn" data-tab="csv">CSV Import</button>
-        <button class="tab-btn" data-tab="excel">Excel Converter</button>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+
+<header class="top">
+  <div class="brand-row">
+    <div class="brand">
+      <span class="mark">ICS</span>
+      <h1>Horário → Calendário</h1>
+    </div>
+
+    <button class="theme-toggle" id="themeToggle" type="button">
+      ☾ Escuro
+    </button>
+  </div>
+
+  <p class="tag">
+    Transforma o teu horário de trabalho num ficheiro <code>.ics</code>
+    para importar no Apple Calendar, Google Calendar ou Outlook.
+    Tudo corre no teu browser — nada é enviado para nenhum servidor.
+  </p>
+</header>
+
+<main>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="manual">
+      <span class="num">1</span>
+      Preenchimento manual
+    </button>
+
+    <button class="tab-btn" data-tab="csv">
+      <span class="num">2</span>
+      Importar CSV
+    </button>
+
+    <button class="tab-btn" data-tab="xlsx">
+      <span class="num">3</span>
+      Excel → CSV
+    </button>
+  </nav>
+
+  <!-- ===================== TAB 1: MANUAL ===================== -->
+
+  <section class="panel active" id="panel-manual">
+
+    <div class="card">
+      <h2>Códigos de turno</h2>
+
+      <p class="hint">
+        Define o que cada código significa. Um código pode ter um período
+        (turno contínuo) ou dois períodos (com intervalo).
+        "Folga" e "Férias" ficam marcados como dia inteiro, sem horas.
+      </p>
+
+      <div class="codes-wrap">
+        <table class="codes" id="codesTable">
+          <thead>
+            <tr>
+              <th style="width:14%">Código</th>
+              <th style="width:20%">Nome</th>
+              <th>Início 1</th>
+              <th>Fim 1</th>
+              <th>
+                Início 2
+                <span style="font-weight:400;text-transform:none;">
+                  (opcional)
+                </span>
+              </th>
+              <th>Fim 2</th>
+              <th class="remove-column"></th>
+            </tr>
+          </thead>
+
+          <tbody id="codesBody"></tbody>
+        </table>
       </div>
-      
-      <div id="manual-tab" class="tab-content active">
-        <div class="instructions">
-          <h3>Instructions:</h3>
-          <p>1. Select the year and month for your schedule</p>
-          <p>2. Choose the shift code for each day of the month</p>
-          <p>3. Click "Generate Calendar" to create and download your .ics file</p>
-        </div>
-        
-        <div class="shift-legend">
-          <div class="shift-item">1 → 10:00 - 19:00</div>
-          <div class="shift-item">2 → 14:00 - 23:00</div>
-          <div class="shift-item">5 → 11:30 - 20:30</div>
-          <div class="shift-item">folga → Day Off</div>
-          <div class="shift-item">ferias → Vacation</div>
-        </div>
-        
-        <div class="year-selector">
-          <button id="prev-year">◀</button>
-          <span id="current-year">2024</span>
-          <button id="next-year">▶</button>
-        </div>
-        
-        <div class="month-selector" id="month-selector">
-        </div>
-        
-        <div id="schedule-container">
-          <div class="schedule-grid" id="schedule-grid">
-          </div>
-        </div>
-        
-        <button class="generate" id="generate">Generate Calendar</button>
-        
-        <div id="result"></div>
-      </div>
-      
-      <div id="csv-tab" class="tab-content">
-        <div class="instructions">
-          <h3>CSV Import Instructions:</h3>
-          <p>1.  Upload your CSV schedule file OR paste your CSV data in the text area below</p>
-          <p>2.  Enter the name of the person whose schedule you want to extract</p>
-          <p>3.  Click "Generate Calendar" to create and download the .ics file</p>
-        </div>
-      
-        <div class="form-group">
-          <label for="csv-file">Upload CSV File:</label>
-          <input type="file" id="csv-file" accept=".csv" />
-        </div>
-      
-        <div class="form-group">
-          <label for="csv-data">Paste CSV Data:</label>
-          <textarea
-            id="csv-data"
-            placeholder="Paste your CSV schedule data here..."
-            rows="10"
-          ></textarea>
-        </div>
-      
-        <div class="form-group">
-          <label for="person-name">Person Name:</label>
-          <input type="text" id="person-name" placeholder="e.g., Telmo Sousa" />
-        </div>
-      
-        <div class="form-group">
-          <label for="year-input">Year (if not specified in CSV):</label>
-          <input
-            type="number"
-            id="year-input"
-            placeholder="e.g., 2025"
-            value="2025"
-          />
-        </div>
-      
-        <button class="generate" id="generate-from-csv">Generate Calendar</button>
-      
-        <div id="csv-result"></div>
-      </div>
-      
-      <div id="excel-tab" class="tab-content">
-        <div class="instructions">
-          <h3>Excel to CSV Converter:</h3>
-          <p>1. Upload your Excel file (.xlsx or .xls)</p>
-          <p>2. The converter will process the file and display the CSV output</p>
-          <p>3. Copy the CSV data to use in the CSV Import tab</p>
-        </div>
-        
-        <div class="form-group">
-          <label for="excel-file">Upload Excel File:</label>
-          <input type="file" id="excel-file" accept=".xlsx, .xls">
-        </div>
-        
-        <div class="form-group">
-          <label for="sheet-select">Select Sheet:</label>
-          <select id="sheet-select" disabled>
-            <option value="">First load an Excel file...</option>
-          </select>
-        </div>
-        
-        <button class="generate" id="convert-excel" disabled>Convert to CSV</button>
-        
-        <div class="form-group" id="csv-output-container" style="display: none;">
-          <label for="csv-output">CSV Output:</label>
-          <textarea id="csv-output" rows="15" readonly></textarea>
-          <button class="copy-btn" id="copy-csv">Copy to Clipboard</button>
-          <button class="copy-btn" id="use-in-csv-tab">Use in CSV Import Tab</button>
-        </div>
-        
-        <div id="excel-result"></div>
+
+      <div class="add-code-row">
+        <button class="btn ghost" id="addCodeBtn" type="button">
+          + adicionar código
+        </button>
       </div>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="script.js"></script>
-    <script src="excel-converter.js"></script>
-  </body>
+
+
+    <div class="card">
+
+      <h2>Mês a preencher</h2>
+
+      <div class="row">
+
+        <div>
+          <label class="field-label">Mês</label>
+          <select id="manMonth"></select>
+        </div>
+
+        <div>
+          <label class="field-label">Ano</label>
+          <input
+            type="number"
+            id="manYear"
+            value="2026"
+            min="2000"
+            max="2100"
+          >
+        </div>
+
+        <div class="build-button">
+          <button class="btn secondary" id="buildCalBtn" type="button">
+            Gerar grelha do mês
+          </button>
+        </div>
+
+      </div>
+
+      <div class="cal-grid" id="calDow"></div>
+      <div class="cal-grid" id="calGrid"></div>
+
+      <div class="toolbar">
+        <button class="btn" id="genManualBtn" type="button">
+          Gerar calendário (.ics)
+        </button>
+
+        <button class="btn secondary" id="fillAllBtn" type="button">
+          Aplicar 1 código a todos os dias úteis
+        </button>
+      </div>
+
+      <div class="status" id="manualStatus"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ===================== TAB 2: CSV ===================== -->
+
+  <section class="panel" id="panel-csv">
+
+    <div class="card">
+
+      <h2>Códigos de turno</h2>
+
+      <p class="hint">
+        Mesma tabela de códigos da aba anterior — usada para converter
+        os códigos do CSV em horas.
+      </p>
+
+      <div class="codes-wrap">
+        <table class="codes" id="codesTable2"></table>
+      </div>
+
+      <div class="add-code-row">
+        <button class="btn ghost" id="addCodeBtn2" type="button">
+          + adicionar código
+        </button>
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>Carregar horário (CSV)</h2>
+
+      <p class="hint">
+        Formato esperado por coluna:
+        <code>Data,Nome,Periodo1,Periodo2</code>.
+        <code>Periodo1</code>/<code>Periodo2</code> podem ser um código
+        (ex. <code>2</code>), <code>Folga</code>, <code>Ferias</code>,
+        ou horas concretas como <code>10:00|14:00</code>.
+        Também aceita um formato simples de 2 colunas:
+        <code>Data,Codigo</code>.
+      </p>
+
+      <div class="drop" id="csvDrop">
+        <strong>Arrasta um ficheiro .csv para aqui</strong>
+        ou clica para escolher — ou cola o conteúdo abaixo.
+
+        <input
+          type="file"
+          id="csvFile"
+          accept=".csv,text/csv"
+          style="display:none;"
+        >
+      </div>
+
+      <label class="field-label paste-label">
+        Ou cola aqui o CSV
+      </label>
+
+      <textarea
+        id="csvPaste"
+        placeholder="Data,Nome,Periodo1,Periodo2
+2026-07-01,Dylan Germano,1,1
+2026-07-02,Dylan Germano,Folga,"
+      ></textarea>
+
+      <div class="toolbar">
+        <button class="btn secondary" id="parseCsvBtn" type="button">
+          Ler CSV
+        </button>
+      </div>
+
+      <div class="row csv-name-row" id="csvNameRow">
+
+        <div>
+          <label class="field-label">Filtrar por pessoa</label>
+          <select id="csvNameSelect"></select>
+        </div>
+
+      </div>
+
+      <div class="preview-wrap" id="csvPreviewWrap">
+        <table class="preview" id="csvPreviewTable"></table>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn" id="genCsvBtn" type="button" disabled>
+          Gerar calendário (.ics)
+        </button>
+      </div>
+
+      <div class="status" id="csvStatus"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ===================== TAB 3: XLSX ===================== -->
+
+  <section class="panel" id="panel-xlsx">
+
+    <div class="card">
+
+      <h2>Converter Excel para CSV</h2>
+
+      <p class="hint">
+        Carrega o ficheiro <code>.xlsx</code>/<code>.xls</code> da escala.
+        O conversor procura automaticamente o formato de escala semanal
+        (blocos "SEMANA Nº…", um funcionário por linha, colunas 1ºP/2ºP
+        por dia). Se a folha for diferente, faz o fallback linha-a-linha
+        e podes ajustar o CSV à mão.
+      </p>
+
+      <div class="drop" id="xlsxDrop">
+
+        <strong>Arrasta um ficheiro .xlsx para aqui</strong>
+        ou clica para escolher.
+
+        <input
+          type="file"
+          id="xlsxFile"
+          accept=".xlsx,.xls"
+          style="display:none;"
+        >
+
+      </div>
+
+      <div class="row sheet-row" id="sheetRow">
+
+        <div class="sheet-picker-wrap">
+          <label class="field-label">Folha</label>
+          <select id="sheetPicker"></select>
+        </div>
+
+      </div>
+
+      <div class="status" id="xlsxStatus"></div>
+
+      <div class="preview-wrap" id="xlsxPreviewWrap">
+        <table class="preview" id="xlsxPreviewTable"></table>
+      </div>
+
+      <div class="toolbar xlsx-toolbar" id="xlsxToolbar">
+
+        <button class="btn secondary" id="downloadCsvBtn" type="button">
+          Descarregar .csv
+        </button>
+
+        <button class="btn" id="useInCsvBtn" type="button">
+          Usar este CSV na aba "Importar CSV"
+        </button>
+
+      </div>
+
+      <div class="note">
+        Este conversor foi desenhado a pensar no formato de escala tipo
+        "Viatel" (semana a semana, funcionário por linha, colunas 1ºP /
+        2ºP por dia). Outros formatos de Excel podem não ser reconhecidos
+        automaticamente — nesse caso, exporta as colunas Data / Nome /
+        Turno manualmente para CSV e usa a aba 2.
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  Gerado localmente no teu browser. Nenhum dado do teu horário sai deste dispositivo.
+</footer>
+
+<script src="script.js"></script>
+
+</body>
 </html>
